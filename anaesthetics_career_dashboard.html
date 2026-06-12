@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anaesthetics Career Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: rgba(255, 255, 255, 0.82);
+      --panel-solid: #ffffff;
+      --text: #152033;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --accent: #3b82f6;
+      --accent-soft: #dbeafe;
+      --green: #16a34a;
+      --green-soft: #dcfce7;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --red: #dc2626;
+      --red-soft: #fee2e2;
+      --purple: #7c3aed;
+      --purple-soft: #ede9fe;
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe, transparent 32%), radial-gradient(circle at top right, #f3e8ff, transparent 28%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 46px);
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+
+    .title-block p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button, .button {
+      border: 0;
+      padding: 11px 14px;
+      border-radius: 999px;
+      font-weight: 650;
+      background: var(--panel-solid);
+      color: var(--text);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button.primary {
+      background: var(--text);
+      color: white;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 132px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric .value {
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .metric .note {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      height: 11px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin-top: auto;
+    }
+
+    .progress {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+      width: var(--w, 0%);
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .phase {
+      display: grid;
+      grid-template-columns: 110px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid var(--line);
+    }
+
+    .date { font-weight: 800; font-size: 14px; }
+    .phase p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .pill.green { background: var(--green-soft); color: var(--green); }
+    .pill.amber { background: var(--amber-soft); color: var(--amber); }
+    .pill.blue { background: var(--accent-soft); color: var(--accent); }
+    .pill.purple { background: var(--purple-soft); color: var(--purple); }
+    .pill.red { background: var(--red-soft); color: var(--red); }
+
+    .checklist { display: grid; gap: 9px; }
+    .check {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .check:last-child { border-bottom: 0; }
+    .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .check label { font-size: 14px; font-weight: 650; }
+    .check small { color: var(--muted); }
+
+    .table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .table th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding-bottom: 10px;
+    }
+    .table td { padding: 12px 8px 12px 0; border-top: 1px solid var(--line); vertical-align: top; }
+
+    textarea, input[type="text"], select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.75);
+      font: inherit;
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea { min-height: 140px; resize: vertical; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .prompt-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 20px;
+      padding: 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tab { padding: 8px 11px; font-size: 13px; background: #f8fafc; border: 1px solid var(--line); }
+    .tab.active { background: var(--text); color: white; }
+
+    .hidden { display: none; }
+
+    .footer-note { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+    @media (max-width: 980px) {
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      header { flex-direction: column; align-items: flex-start; }
+      .top-actions { justify-content: flex-start; }
+      .phase { grid-template-columns: 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="title-block">
+        <h1>Anaesthetics Pathway</h1>
+        <p>4th year → 5th year critical care/elective → PGY1 → PGY2 → PGY3 application</p>
+      </div>
+      <div class="top-actions">
+        <button onclick="window.print()">Export PDF</button>
+        <button onclick="copyWeeklyPrompt()">Copy weekly AI prompt</button>
+        <button class="primary" onclick="saveDashboard()">Save locally</button>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="card span-3 metric">
+        <div class="label">Application readiness</div>
+        <div class="value" id="readinessValue">38%</div>
+        <div class="note">Based on CV evidence domains completed.</div>
+        <div class="progress-wrap"><div class="progress" id="readinessBar" style="--w:38%"></div></div>
+      </div>
+
+      <div class="card span-3 metric">
+        <div class="label">Current phase</div>
+        <div class="value" style="font-size:30px">4th Year</div>
+        <div class="note">Build systems, research output, mentor links, foundation content.</div>
+        <span class="pill blue" style="width:max-content">System-building</span>
+      </div>
+
+      <div class="card span-3 metric">
+        <div class="label">Weekly minimum</div>
+        <div class="value">3h</div>
+        <div class="note">60–90 min content, 60–90 min research, 20 min portfolio, 10 min mentor action.</div>
+      </div>
+
+      <div class="card span-3 metric">
+        <div class="label">Next key event</div>
+        <div class="value" style="font-size:28px">Critical Care</div>
+        <div class="note">Early next year: use as mentor/referee + interview evidence generator.</div>
+        <span class="pill amber" style="width:max-content">Prepare 2 weeks before</span>
+      </div>
+
+      <div class="card span-7">
+        <h2>Roadmap</h2>
+        <div class="timeline">
+          <div class="phase">
+            <div class="date">Now</div>
+            <div><h3>Build the operating system</h3><p>Dashboard, CV master, weekly AI log, mentor tracker, research plan.</p></div>
+            <span class="pill blue">Active</span>
+          </div>
+          <div class="phase">
+            <div class="date">3 months</div>
+            <div><h3>Produce evidence</h3><p>Teaching item, research/QI plan, CV v1, 12-week anaesthetic foundation.</p></div>
+            <span class="pill purple">Milestone</span>
+          </div>
+          <div class="phase">
+            <div class="date">Early 5th</div>
+            <div><h3>Critical care placement</h3><p>Daily case debriefs, procedure log, mentor conversation, interview stories.</p></div>
+            <span class="pill amber">High value</span>
+          </div>
+          <div class="phase">
+            <div class="date">Late 5th</div>
+            <div><h3>Anaesthetics elective</h3><p>Theatre log, consultant feedback, elective reflection, PGY1/PGY2 strategy.</p></div>
+            <span class="pill amber">High value</span>
+          </div>
+          <div class="phase">
+            <div class="date">PGY1</div>
+            <div><h3>Become trusted</h3><p>Safe intern, strong references, ED/surgery/medicine performance, PGY2 applications.</p></div>
+            <span class="pill green">Referees</span>
+          </div>
+          <div class="phase">
+            <div class="date">PGY2</div>
+            <div><h3>Position for selection</h3><p>ICU/ED/anaesthetics-facing role, QI output, interviews, registrar/SRMO applications.</p></div>
+            <span class="pill green">Apply</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card span-5">
+        <h2>This week</h2>
+        <div class="checklist" id="weeklyChecklist">
+          <div class="check"><input type="checkbox" data-score="8"><label>Update portfolio log for 20 minutes</label><small>Sun</small></div>
+          <div class="check"><input type="checkbox" data-score="10"><label>60–90 min anaesthetic/acute care content</label><small>Study</small></div>
+          <div class="check"><input type="checkbox" data-score="10"><label>60–90 min research/QI progress</label><small>CV</small></div>
+          <div class="check"><input type="checkbox" data-score="6"><label>One mentor/referee action</label><small>Email/chat</small></div>
+          <div class="check"><input type="checkbox" data-score="6"><label>Add one interview story</label><small>STAR</small></div>
+          <div class="check"><input type="checkbox" data-score="6"><label>Voice viva during walk/exercise</label><small>AI</small></div>
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <h2>CV evidence domains</h2>
+        <table class="table">
+          <thead><tr><th>Domain</th><th>Status</th><th>Next low-effort action</th></tr></thead>
+          <tbody>
+            <tr><td>Perioperative research/QI</td><td><span class="pill amber">In progress</span></td><td>Turn bariatric/PONV project into poster/abstract plan.</td></tr>
+            <tr><td>Critical care exposure</td><td><span class="pill blue">Upcoming</span></td><td>Prepare 2-week crash course before placement.</td></tr>
+            <tr><td>Anaesthetic exposure</td><td><span class="pill blue">Upcoming</span></td><td>Use elective for theatre log + consultant feedback.</td></tr>
+            <tr><td>Teaching</td><td><span class="pill red">Gap</span></td><td>Run 20-min ABCDE/shock tutorial with feedback form.</td></tr>
+            <tr><td>Leadership/innovation</td><td><span class="pill green">Strong</span></td><td>Frame Luna as education/systems improvement, not startup hype.</td></tr>
+            <tr><td>Referees/mentors</td><td><span class="pill amber">Build</span></td><td>Track 1 anaesthetics/ICU mentor relationship.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card span-6">
+        <h2>Weekly capture</h2>
+        <div class="two-col">
+          <input id="caseInput" type="text" placeholder="Best case/exposure this week" />
+          <select id="domainSelect">
+            <option>Clinical deterioration</option>
+            <option>Teamwork</option>
+            <option>Communication</option>
+            <option>Research/QI</option>
+            <option>Teaching</option>
+            <option>Leadership</option>
+            <option>Feedback</option>
+          </select>
+        </div>
+        <br />
+        <textarea id="notesInput" placeholder="Messy notes: what happened, what you learned, what feedback you got, what you want AI to convert into portfolio/interview evidence..."></textarea>
+        <br /><br />
+        <button onclick="addLog()">Add to local log</button>
+        <button onclick="copyDebriefPrompt()">Copy debrief prompt</button>
+      </div>
+
+      <div class="card span-8">
+        <h2>AI command centre</h2>
+        <div class="tabs">
+          <button class="tab active" onclick="showPrompt('weekly', this)">Weekly review</button>
+          <button class="tab" onclick="showPrompt('placement', this)">Placement debrief</button>
+          <button class="tab" onclick="showPrompt('viva', this)">Voice viva</button>
+          <button class="tab" onclick="showPrompt('research', this)">Research/QI</button>
+          <button class="tab" onclick="showPrompt('cv', this)">CV gap check</button>
+        </div>
+        <div class="prompt-box" id="promptBox"></div>
+      </div>
+
+      <div class="card span-4">
+        <h2>Mentor/referee pipeline</h2>
+        <table class="table">
+          <thead><tr><th>Person</th><th>Stage</th><th>Next</th></tr></thead>
+          <tbody>
+            <tr><td>ICU consultant</td><td><span class="pill blue">Find</span></td><td>Critical care placement</td></tr>
+            <tr><td>Anaesthetics consultant</td><td><span class="pill blue">Find</span></td><td>Elective</td></tr>
+            <tr><td>Research supervisor</td><td><span class="pill amber">Build</span></td><td>Poster/abstract</td></tr>
+            <tr><td>PGY1 term supervisor</td><td><span class="pill purple">Future</span></td><td>Strong clinical work</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card span-12">
+        <h2>Local log</h2>
+        <table class="table" id="logTable">
+          <thead><tr><th>Date</th><th>Domain</th><th>Case/exposure</th><th>Notes</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="footer-note">This prototype stores data in your browser localStorage only. For true cross-device sync, connect the same layout to Notion, Supabase, Firebase, Airtable, or Google Sheets.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const prompts = {
+      weekly: `I am a 4th year Australian medical student aiming for PGY3 anaesthetics. Review my week and turn my messy notes into:\n\n1. Portfolio entry\n2. CV bullet\n3. STAR interview answer\n4. Anaesthetic/critical care learning points\n5. Research/QI opportunities\n6. One low-effort action for next week\n\nKeep it honest, concise, and not exaggerated.`,
+      placement: `Turn this placement note into:\n\n1. Three clinical learning points\n2. Anaesthetic/ICU relevance\n3. One patient-safety reflection\n4. One 90-second STAR interview answer\n5. Five Anki cards\n6. One intelligent question to ask my supervisor tomorrow\n\nMessy note:`,
+      viva: `Viva me as an anaesthetic registrar teaching a final-year Australian medical student. Ask one question at a time. Focus on physiology, acute deterioration, airway, breathing, circulation, analgesia, perioperative medicine, and safe escalation. Mark me strictly but teach clearly.`,
+      research: `Act as an anaesthetics research supervisor. Help me convert my perioperative/bariatric/PONV project into the highest-yield CV output. Give me the minimum dataset, analysis plan, poster structure, abstract draft, limitations, and what claims I can/cannot make.`,
+      cv: `Here is my current CV/activity list. I want to be competitive for PGY3 anaesthetics in Australia. Map my evidence to: clinical excellence, communication, collaboration, leadership, scholar/research, professionalism, teaching, and commitment to anaesthesia. Give me the top 5 gaps and the lowest-effort fix for each.`
+    };
+
+    const promptBox = document.getElementById('promptBox');
+    promptBox.textContent = prompts.weekly;
+
+    function showPrompt(key, btn) {
+      promptBox.textContent = prompts[key];
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function copyWeeklyPrompt() {
+      navigator.clipboard.writeText(prompts.weekly);
+      alert('Weekly AI prompt copied.');
+    }
+
+    function copyDebriefPrompt() {
+      const note = document.getElementById('notesInput').value;
+      navigator.clipboard.writeText(prompts.placement + '\n\n' + note);
+      alert('Debrief prompt copied.');
+    }
+
+    function addLog() {
+      const caseText = document.getElementById('caseInput').value.trim();
+      const domain = document.getElementById('domainSelect').value;
+      const notes = document.getElementById('notesInput').value.trim();
+      if (!caseText && !notes) return alert('Add a case/exposure or note first.');
+      const logs = JSON.parse(localStorage.getItem('anaesLogs') || '[]');
+      logs.unshift({ date: new Date().toLocaleDateString('en-AU'), domain, caseText, notes });
+      localStorage.setItem('anaesLogs', JSON.stringify(logs));
+      document.getElementById('caseInput').value = '';
+      document.getElementById('notesInput').value = '';
+      renderLogs();
+    }
+
+    function renderLogs() {
+      const tbody = document.querySelector('#logTable tbody');
+      const logs = JSON.parse(localStorage.getItem('anaesLogs') || '[]');
+      tbody.innerHTML = logs.map(l => `<tr><td>${l.date}</td><td>${l.domain}</td><td>${escapeHtml(l.caseText)}</td><td>${escapeHtml(l.notes)}</td></tr>`).join('');
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>'"]/g, tag => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[tag]));
+    }
+
+    function updateScore() {
+      const boxes = document.querySelectorAll('#weeklyChecklist input[type="checkbox"]');
+      let score = 38;
+      boxes.forEach(b => { if (b.checked) score += Number(b.dataset.score || 0); });
+      score = Math.min(score, 86);
+      document.getElementById('readinessValue').textContent = score + '%';
+      document.getElementById('readinessBar').style.setProperty('--w', score + '%');
+      localStorage.setItem('anaesChecklist', JSON.stringify([...boxes].map(b => b.checked)));
+    }
+
+    function saveDashboard() {
+      updateScore();
+      alert('Saved in this browser. For cross-device sync, deploy this page and connect a database such as Notion, Supabase, Firebase, Airtable, or Google Sheets.');
+    }
+
+    document.querySelectorAll('#weeklyChecklist input[type="checkbox"]').forEach((b, i) => {
+      const saved = JSON.parse(localStorage.getItem('anaesChecklist') || '[]');
+      if (saved[i]) b.checked = true;
+      b.addEventListener('change', updateScore);
+    });
+
+    renderLogs();
+    updateScore();
+  </script>
+</body>
+</html>
